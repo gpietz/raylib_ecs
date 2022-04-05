@@ -1,8 +1,7 @@
 extern crate bevy_ecs;
 extern crate raylib;
 
-use std::collections::hash_map::Keys;
-use bevy_ecs::prelude::{Query, Schedule, Stage, SystemStage, World, Component};
+use bevy_ecs::prelude::{Query, Schedule, Stage, SystemStage, World, Component, Res};
 use bevy_ecs::system::{NonSend, ResMut};
 use raylib::color::Color;
 use raylib::drawing::RaylibDraw;
@@ -54,21 +53,28 @@ fn should_close(world: &mut World) -> bool {
 }
 
 fn input(
-    mut rl_handle: ResMut<RaylibHandle>,
+    rl_handle: Res<RaylibHandle>,
     mut query: Query<&mut Position>
 ) {
+    let screen_width =  rl_handle.get_screen_width();
+    let screen_height = rl_handle.get_screen_height();
+
     let mut position = query.single_mut();
-    if rl_handle.is_key_down(KEY_LEFT ) && position.x > 0 {
+    if rl_handle.is_key_down(KEY_LEFT) && position.x > 0 {
         position.x -= 4;
     }
-    if rl_handle.is_key_down(KEY_RIGHT ) && position.x + 40 < rl_handle.get_screen_width() {
+    if rl_handle.is_key_down(KEY_RIGHT) && position.x + 40 < screen_width {
         position.x += 4;
     }
     if rl_handle.is_key_down(KEY_UP) && position.y > 0 {
         position.y -= 4;
     }
-    if rl_handle.is_key_down(KEY_DOWN) && position.y + 40 < rl_handle.get_screen_height() {
+    if rl_handle.is_key_down(KEY_DOWN) && position.y + 40 < screen_height {
         position.y += 4;
+    }
+    if rl_handle.is_key_pressed(KEY_C) {
+        position.x = screen_width / 2 - 20;
+        position.y = screen_height / 2 - 20;
     }
 }
 
